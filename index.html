@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌱 AgroSustentável - Cultivando o Futuro 🌍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a2e1c 0%, #1a4a2a 50%, #0d2f1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            cursor: default;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(72,187,120,0.5); }
+            100% { box-shadow: 0 0 20px rgba(72,187,120,0.8); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        #game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        #game-header {
+            background: linear-gradient(135deg, #1e6b3e 0%, #0d3b1f 100%);
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #game-header::before {
+            content: "🌾";
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.1;
+            left: -20px;
+            top: -20px;
+            animation: spin 10s linear infinite;
+        }
+
+        #game-header::after {
+            content: "🌱";
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.1;
+            right: -20px;
+            bottom: -20px;
+            animation: spin 10s linear infinite reverse;
+        }
+
+        #game-header h1 {
+            color: white;
+            font-size: 2em;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #subtitle {
+            color: #c6f6d5;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        #canvas-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+            position: relative;
+        }
+
+        canvas {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        canvas:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        #stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f7fafc;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card:active {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+            animation: bounce 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .stat-name {
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2d3748;
+            font-size: 0.9em;
+        }
+
+        .stat-bar {
+            width: 100%;
+            height: 25px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .stat-fill {
+            height: 100%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        #actions-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e2e8f0;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .action-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .action-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: glow 1s infinite;
+        }
+
+        .action-btn:active:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-green { background: linear-gradient(135deg, #48bb78 0%, #2f855a 100%); }
+        .btn-blue { background: linear-gradient(135deg, #4299e1 0%, #2b6cb0 100%); }
+        .btn-purple { background: linear-gradient(135deg, #9f7aea 0%, #6b46c1 100%); }
+        .btn-red { background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%); animation: shake 0.5s ease-in-out infinite; }
+        .btn-yellow { background: linear-gradient(135deg, #ecc94b 0%, #b7791f 100%); color: #2d3748; }
+
+        #message-area {
+            margin: 0 20px 20px 20px;
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        #message-header {
+            background: #1a202c;
+            color: #48bb78;
+            padding: 12px 20px;
+            font-weight: bold;
+            font-size: 1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #message-counter {
+            background: #48bb78;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+
+        #message-content {
+            padding: 15px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            min-height: 80px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 0.95em;
+        }
+
+        #message-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #message-content::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+
+        #message-content::-webkit-scrollbar-thumb {
+            background: #48bb78;
+            border-radius: 3px;
+        }
+
+        #controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 0 20px 20px 20px;
+        }
+
+        .control-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #5a6578 0%, #3d4758 100%);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        #footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-top: 2px solid #a5d6a7;
+        }
+
+        #cycle-text {
+            font-weight: bold;
+            color: #1e6b3e;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #cycle-progress {
+            width: 200px;
+            height: 8px;
+            background: #c6f6d5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        #cycle-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #2f855a);
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
+        #status-text {
+            font-weight: bold;
+            padding: 6px 15px;
+            border-radius: 25px;
+            background: #48bb78;
+            color: white;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .status-gameover {
+            background: #e53e3e;
+            animation: pulse 1s infinite;
+        }
+
+        .status-win {
+            background: #ecc94b;
+            color: #2d3748;
+            animation: pulse 1s infinite;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 3% auto;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90%;
+            overflow-y: auto;
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-content h2 {
+            background: linear-gradient(135deg, #1e6b3e 0%, #0d3b1f 100%);
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            margin: 0;
+        }
+
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .close:hover {
+            transform: scale(1.2) rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-body h3 {
+            color: #1e6b3e;
+            margin: 20px 0 10px;
+            font-size: 1.2em;
+        }
+
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .modal-body li {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 900px) {
+            #actions-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            #game-header h1 {
+                font-size: 1.2em;
+            }
+            
+            .stat-name {
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-btn {
+                font-size: 0.7em;
+                padding: 8px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+<div id="game-container">
+    <div id="game-header">
+        <h1>🌱🌍 AGRO SUSTENTÁVEL: O EQUILÍBRIO 🌍🌱</h1>
+        <div id="subtitle">🌾 Plante com consciência, colha um futuro melhor! 🌾</div>
+    </div>
+    
+    <div id="canvas-container"></div>
+    
+    <div id="stats-panel">
+        <div class="stat-card" data-stat="producao">
+            <div class="stat-icon">🌾</div>
+            <div class="stat-name">PRODUÇÃO</div>
+            <div class="stat-bar"><div id="prod-fill" class="stat-fill" style="width: 0%; background: #48bb78;"></div></div>
+            <div class="stat-value" id="prod-value">0</div>
+        </div>
+        <div class="stat-card" data-stat="solo">
+            <div class="stat-icon">🌱</div>
+            <div class="stat-name">SAÚDE DO SOLO</div>
+            <div class="stat-bar"><div id="solo-fill" class="stat-fill" style="width: 0%; background: #8B5A2B;"></div></div>
+            <div class="stat-value" id="solo-value">0</div>
+        </div>
+        <div class="stat-card" data-stat="agua">
+            <div class="stat-icon">💧</div>
+            <div class="stat-name">ÁGUA</div>
+            <div class="stat-bar"><div id="agua-fill" class="stat-fill" style="width: 0%; background: #4299e1;"></div></div>
+            <div class="stat-value" id="agua-value">0</div>
+        </div>
+        <div class="stat-card" data-stat="biodiversidade">
+            <div class="stat-icon">🦋</div>
+            <div class="stat-name">BIODIVERSIDADE</div>
+            <div class="stat-bar"><div id="bio-fill" class="stat-fill" style="width: 0%; background: #9f7aea;"></div></div>
+            <div class="stat-value" id="bio-value">0</div>
+        </div>
+        <div class="stat-card" data-stat="dinheiro">
+            <div class="stat-icon">💰</div>
+            <div class="stat-name">DINHEIRO</div>
+            <div class="stat-bar"><div id="money-fill" class="stat-fill" style="width: 0%; background: #ecc94b;"></div></div>
+            <div class="stat-value" id="money-value">0</div>
+        </div>
+    </div>
+    
+    <div id="actions-panel">
+        <button class="action-btn btn-green" id="btn-plantio">🌾 Plantio Direto<br><small>💰50 | 🌱+10</small></button>
+        <button class="action-btn btn-green" id="btn-agrofloresta">🌳 Agrofloresta<br><small>💰200 | 🌟+25</small></button>
+        <button class="action-btn btn-blue" id="btn-irrigacao">💧 Irrigação Sust.<br><small>💰150 | 💧+25</small></button>
+        <button class="action-btn btn-green" id="btn-adubacao">🪱 Adubação Org.<br><small>💰80 | 🌱+22</small></button>
+        <button class="action-btn btn-purple" id="btn-capacitacao">📚 Capacitação<br><small>💰100 | 🌾+20</small></button>
+        <button class="action-btn btn-blue" id="btn-nascente">🌿 Proteger Nascente<br><small>💰120 | 💧+30</small></button>
+        <button class="action-btn btn-red" id="btn-agrotoxico">☣️ Agrotóxico<br><small>💰30 | ⚠️ RISCO</small></button>
+        <button class="action-btn btn-yellow" id="btn-cooperativa">🤝 Cooperativa<br><small>✨ GRÁTIS | +💰</small></button>
+    </div>
+    
+    <div id="message-area">
+        <div id="message-header">
+            <span>📢 SISTEMA DE FEEDBACK</span>
+            <span id="message-counter">💬 0 mensagens</span>
+        </div>
+        <div id="message-content">✨ Bem-vindo ao Agro Sustentável! Complete 10 ciclos com todos indicadores acima de zero!</div>
+    </div>
+    
+    <div id="controls">
+        <button class="control-btn" id="reset-btn">🔄 NOVO JOGO</button>
+        <button class="control-btn" id="info-btn">📖 GUIA DO JOGO</button>
+        <button class="control-btn" id="sound-btn">🔊 SOM: ON</button>
+    </div>
+    
+    <div id="footer">
+        <div id="cycle-text">
+            🌾 CICLO 0 / 10
+            <div id="cycle-progress"><div id="cycle-progress-fill" style="width: 0%"></div></div>
+        </div>
+        <span id="status-text">🎮 EM ANDAMENTO</span>
+    </div>
+</div>
+
+<div id="info-modal" class="modal">
+    <div class="modal-content">
+        <h2>📖 GUIA COMPLETO <span class="close">&times;</span></h2>
+        <div class="modal-body">
+            <h3>🎯 OBJETIVO DO JOGO</h3>
+            <p>Sobreviver por <strong>10 ciclos agrícolas</strong> mantendo TODOS os 5 indicadores acima de ZERO.</p>
+            
+            <h3>📊 INDICADORES</h3>
+            <ul>
+                <li><strong>🌾 Produção:</strong> Quantidade de alimentos produzidos</li>
+                <li><strong>🌱 Saúde do Solo:</strong> Fertilidade e vida no solo</li>
+                <li><strong>💧 Água:</strong> Disponibilidade e qualidade da água</li>
+                <li><strong>🦋 Biodiversidade:</strong> Animais, insetos e plantas nativas</li>
+                <li><strong>💰 Dinheiro:</strong> Recursos para investir na fazenda</li>
+            </ul>
+            
+            <h3>🌱 AÇÕES SUSTENTÁVEIS (RECOMENDADAS)</h3>
+            <ul>
+                <li><strong>🌾 Plantio Direto (50$):</strong> +12 Produção, +10 Solo, +5 Água</li>
+                <li><strong>🌳 Agrofloresta (200$):</strong> +15 Produção, +18 Solo, +15 Água, +25 Biodiversidade</li>
+                <li><strong>💧 Irrigação Sustentável (150$):</strong> +25 Água, +8 Produção</li>
+                <li><strong>🪱 Adubação Orgânica (80$):</strong> +22 Solo, +10 Biodiversidade</li>
+                <li><strong>📚 Capacitação (100$):</strong> +20 Produção</li>
+                <li><strong>🌿 Proteger Nascente (120$):</strong> +30 Água, +15 Biodiversidade</li>
+                <li><strong>🤝 Cooperativa (Grátis):</strong> Ganha dinheiro baseado na sustentabilidade</li>
+            </ul>
+            
+            <h3>⚠️ AÇÃO DE RISCO</h3>
+            <ul>
+                <li><strong>☣️ Agrotóxico (30$):</strong> +25 Produção, +80$ rápido, mas -20 Solo, -15 Água, -25 Biodiversidade</li>
+            </ul>
+            
+            <h3>⚡ EVENTOS ALEATÓRIOS</h3>
+            <ul>
+                <li>A cada 2 ciclos, eventos como chuva, pragas, incêndios ou prêmios acontecem</li>
+                <li>Indicadores saudáveis ajudam a resistir a eventos negativos</li>
+            </ul>
+            
+            <div class="tip-card">
+                <strong>💡 DICA DE OURO</strong><br>
+                Invista em sustentabilidade desde o início! A natureza é sua maior aliada. 
+                Biodiversidade alta = menos pragas. Solo saudável = mais resistência. 
+                Água limpa = produção garantida. O retorno vem a longo prazo! 🌍
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="sketch.js"></script>
+</body>
+</html>
